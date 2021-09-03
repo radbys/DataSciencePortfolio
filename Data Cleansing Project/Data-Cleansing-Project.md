@@ -3,6 +3,22 @@ Data Cleansing Project
 Radosław Bysewski
 3 09 2021
 
+<style>
+  body {
+    text-align: justify
+  }
+  .nav-pills a{
+    color:dimgrey;
+  }
+  .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: black;
+    background-color: lightgrey;
+  }
+</style>
+
+<img src="https://www.nba.com/assets/nba_social/og/home.jpg">
+<a href="https://www.nba.com">Image source</a>
+
 ## R Markdown
 
 This is an R Markdown document. Markdown is a simple formatting syntax
@@ -29,7 +45,7 @@ summary(cars)
 
 You can also embed plots, for example:
 
-![](grpahics/pressure-1.png)<!-- -->
+<img src="grpahics/pressure-1.png" style="display: block; margin: auto;" />
 
 Note that the `echo = FALSE` parameter was added to the code chunk to
 prevent printing of the R code that generated the plot.
