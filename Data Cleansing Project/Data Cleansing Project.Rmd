@@ -59,7 +59,5 @@ for(col in 1:ncol(main)){
 
 
 ``` {r Exploring NAs}
-knitr::kable(main[12438, 1:13]) %>%  
-  kableExtra::kable_styling()
-
+knitr::kable(main[12438, 1:13])
 ```
