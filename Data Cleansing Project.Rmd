@@ -2,7 +2,7 @@
 title: "Data Cleansing"
 author: "Radosław Bysewski"
 date: "3 09 2021"
-output: html_document
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
