@@ -2,51 +2,44 @@
 title: "Data Cleansing Project"
 author: "Radosław Bysewski"
 date: "3 09 2021"
-output: rmarkdown::github_document
+output: 
+  github_document:
+    fig_width: 17
+    fig_height: 10
 ---
 
 ```{r setup, include=FALSE}
 set.seed(2510)
 knitr::opts_chunk$set(echo = TRUE,
-                      fig.width=17, 
-                      fig.height=10,
                       fig.align="center",
                       fig.path = "grpahics/")
 ```
 
-<style>
-  body {
-    text-align: justify
-  }
-  .nav-pills a{
-    color:dimgrey;
-  }
-  .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
-    color: black;
-    background-color: lightgrey;
-  }
-</style>
+```{r Load libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)  
 
-<img src="https://www.nba.com/assets/nba_social/og/home.jpg">
-<a href="https://www.nba.com">Image source</a>
-
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+```{r Data Import}
+input_dir <- sprintf("%s/input", getwd())
+input_dir
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+for(file in list.files(input_dir)){
+  name <- substring(file, 1, 1)
+  df   <- readxl::read_excel(sprintf("%s/%s", input_dir, file))
+  assign(name, df)
+  rm(file, name, df)
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r Data Wrangle}
+main <- dplyr::left_join(g, t, by = c("x1" = "Team_ID")) %>% 
+  dplyr::left_join(t, by = c("x2" = "Team_ID")) %>% 
+  dplyr::select(Game_ID, Date, x2, x2, x1_N = Team_Short.x , x2_N = Team_Short.y) %>%
+  dplyr::left_join(o, by = "Game_ID") %>% 
+  dplyr::left_join(l, by = "Game_ID") %>%                         
+  dplyr::left_join(p, by = "Game_ID") %>%                         
+  dplyr::left_join(b, by = "Game_ID") %>%                         
+  dplyr::left_join(s, by = "Game_ID")                         
+```
