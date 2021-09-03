@@ -19,8 +19,6 @@ knitr::opts_chunk$set(echo = TRUE,
 library(tidyverse)
 library(readxl) 
 library(knitr)
-library(kableExtra)
-
 ```
 
 ```{r Data Import}
@@ -37,7 +35,7 @@ for(file in list.files(input_dir)){
 ```{r Data Wrangle}
 main <- dplyr::left_join(g, t, by = c("x1" = "Team_ID")) %>% 
   dplyr::left_join(t, by = c("x2" = "Team_ID")) %>% 
-  dplyr::select(Game_ID, Date, x2, x2, x1_N = Team_Short.x , x2_N = Team_Short.y) %>%
+  dplyr::select(Game_ID, Date, x1, x2, x1_N = Team_Short.x , x2_N = Team_Short.y) %>%
   dplyr::left_join(o, by = "Game_ID") %>% 
   dplyr::left_join(l, by = "Game_ID") %>%                         
   dplyr::left_join(p, by = "Game_ID") %>%                         
@@ -61,3 +59,16 @@ for(col in 1:ncol(main)){
 ``` {r Exploring NAs}
 knitr::kable(main[12438, 1:13])
 ```
+
+
+``` {r Adding info}
+#replace NAs
+main[12438,3] <- 20
+main[12438,5] <- "NYK"
+main[12438,10] <- 104
+main[12438,12] <-  103062240
+
+#verryfing NA reduction
+knitr::kable(main[12438, 1:13])
+```
+

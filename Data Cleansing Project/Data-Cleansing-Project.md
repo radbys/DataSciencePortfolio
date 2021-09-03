@@ -7,7 +7,6 @@ Radosław Bysewski
 library(tidyverse)
 library(readxl) 
 library(knitr)
-library(kableExtra)
 ```
 
 ``` r
@@ -24,7 +23,7 @@ for(file in list.files(input_dir)){
 ``` r
 main <- dplyr::left_join(g, t, by = c("x1" = "Team_ID")) %>% 
   dplyr::left_join(t, by = c("x2" = "Team_ID")) %>% 
-  dplyr::select(Game_ID, Date, x2, x2, x1_N = Team_Short.x , x2_N = Team_Short.y) %>%
+  dplyr::select(Game_ID, Date, x1, x2, x1_N = Team_Short.x , x2_N = Team_Short.y) %>%
   dplyr::left_join(o, by = "Game_ID") %>% 
   dplyr::left_join(l, by = "Game_ID") %>%                         
   dplyr::left_join(p, by = "Game_ID") %>%                         
@@ -51,91 +50,21 @@ for(col in 1:ncol(main)){
 knitr::kable(main[12438, 1:13])
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">
-Game\_ID
-</th>
-<th style="text-align:left;">
-Date
-</th>
-<th style="text-align:right;">
-x2
-</th>
-<th style="text-align:left;">
-x1\_N
-</th>
-<th style="text-align:left;">
-x2\_N
-</th>
-<th style="text-align:right;">
-x1\_Od
-</th>
-<th style="text-align:right;">
-x2\_Od
-</th>
-<th style="text-align:right;">
-Line
-</th>
-<th style="text-align:right;">
-x1\_P
-</th>
-<th style="text-align:right;">
-x2\_P
-</th>
-<th style="text-align:right;">
-x1\_B
-</th>
-<th style="text-align:right;">
-x2\_B
-</th>
-<th style="text-align:right;">
-x1\_MIN
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-12438
-</td>
-<td style="text-align:left;">
-2017-02-23
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-CLE
-</td>
-<td style="text-align:right;">
-2.2
-</td>
-<td style="text-align:right;">
-1.71
-</td>
-<td style="text-align:right;">
-217.5
-</td>
-<td style="text-align:right;">
-141
-</td>
-<td style="text-align:right;">
-119
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-130454892
-</td>
-<td style="text-align:right;">
-199
-</td>
-</tr>
-</tbody>
-</table>
+| Game\_ID | Date       |  x1 |  x2 | x1\_N | x2\_N | x1\_Od | x2\_Od |  Line | x1\_P | x2\_P | x1\_B |     x2\_B |
+|---------:|:-----------|----:|----:|:------|:------|-------:|-------:|------:|------:|------:|------:|----------:|
+|    12438 | 2017-02-23 |   0 |   6 | NA    | CLE   |    2.2 |   1.71 | 217.5 |   141 |   119 |    NA | 130454892 |
+
+``` r
+#replace NAs
+main[12438,3] <- 20
+main[12438,5] <- "NYK"
+main[12438,10] <- 104
+main[12438,12] <-  103062240
+
+#verryfing NA reduction
+knitr::kable(main[12438, 1:13])
+```
+
+| Game\_ID | Date       |  x1 |  x2 | x1\_N | x2\_N | x1\_Od | x2\_Od |  Line | x1\_P | x2\_P |     x1\_B |     x2\_B |
+|---------:|:-----------|----:|----:|:------|:------|-------:|-------:|------:|------:|------:|----------:|----------:|
+|    12438 | 2017-02-23 |  20 |   6 | NYK   | CLE   |    2.2 |   1.71 | 217.5 |   104 |   119 | 103062240 | 130454892 |
