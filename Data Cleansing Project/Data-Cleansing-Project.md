@@ -1,4 +1,4 @@
-Data Cleansing
+Data Cleansing Project
 ================
 Radosław Bysewski
 3 09 2021
@@ -29,7 +29,7 @@ summary(cars)
 
 You can also embed plots, for example:
 
-![](README_figs/README-pressure-1.png)<!-- -->
+![](grpahics/pressure-1.png)<!-- -->
 
 Note that the `echo = FALSE` parameter was added to the code chunk to
 prevent printing of the R code that generated the plot.
