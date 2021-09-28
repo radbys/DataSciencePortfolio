@@ -17,7 +17,7 @@
 # Tasks:
 #   * Monte Carlo simulation
 # Exteral link:
-#   * https://www.kaggle.com/radbys/activities-in-rugby-exploratory-data-analysis
+#   * https://www.kaggle.com/radbys/income-prediction-with-stochastic-simulation
 ################################################################################
 
 # Environment settings
