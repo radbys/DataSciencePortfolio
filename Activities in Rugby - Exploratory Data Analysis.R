@@ -13,7 +13,7 @@
 #   * gridExtra
 #   * gtable
 # Tasks:
-#   * Data wrange
+#   * Data wrangle
 #   * Feature engineering
 #   * EDA
 # Exteral link:
@@ -27,6 +27,7 @@
   library(lubridate)
   library(ggthemes)
   library(gridExtra)
+  library(grid)
   library(gtable)
 
   # Plot settings
