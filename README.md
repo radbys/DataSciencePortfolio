@@ -1,5 +1,5 @@
 
-# Data Science trPortfolio
+# Data Science Portfolio
 
 <!-- badges: start -->
 <!-- badges: end -->
