@@ -21,186 +21,186 @@
 ################################################################################
 
 # Environment settings
-# Loading libraries
-library(ggridges)
-library(ggthemes)
-library(ggpubr)
-library(gganimate)
-library(tidyverse)
-library(knitr)
-library(kableExtra)
-library(assertthat)
+  # Loading libraries
+  library(ggridges)
+  library(ggthemes)
+  library(ggpubr)
+  library(gganimate)
+  library(tidyverse)
+  library(knitr)
+  library(kableExtra)
+  library(assertthat)
 
-# Plot options
-theme_set(theme_fivethirtyeight())
+  # Plot options
+  theme_set(theme_fivethirtyeight())
 
-theme_update(
-  text = element_text(size = 20),
-  plot.title = element_text(size = 26, face = "bold"),
-  strip.text = element_text(size = 20, face = "bold", colour = "black"),
-  strip.background = element_rect(fill = "darkgrey"),
-  legend.key.size = unit(0.5, "cm"),
-  legend.key.width = unit(0.5, "cm")
-)
+  theme_update(
+    text = element_text(size = 20),
+    plot.title = element_text(size = 26, face = "bold"),
+    strip.text = element_text(size = 20, face = "bold", colour = "black"),
+    strip.background = element_rect(fill = "darkgrey"),
+    legend.key.size = unit(0.5, "cm"),
+    legend.key.width = unit(0.5, "cm")
+  )
 
-colors <- c("#0a1128", "#001f54", "#aa8f66", "#ffff82")
+  colors <- c("#0a1128", "#001f54", "#aa8f66", "#ffff82")
 
 # Preparation
-# Assumptions
-w <- c(500, 1000, 1500) # Possible rent cost in three scenarios
-k <- 0:4 # Possible number of clients for each day
-c <- 30:50 # Cost per client
-d <- 20:26 # Number of working days per month
+  # Assumptions
+  w <- c(500, 1000, 1500) # Possible rent cost in three scenarios
+  k <- 0:4 # Possible number of clients for each day
+  c <- 30:50 # Cost per client
+  d <- 20:26 # Number of working days per month
 
-# Propability-price df
-co <- 0.8 # Percentage of regular clients
-na <- 1 - co # Percentage of new clients
-k4 <- c(0.01, 0.01, 0.3, 0.45, 0.3) # Probability of daily demand
-dp <- c(0.3, 0.2, 0.15, 0.1, 0.1, 0.1, 0.05) # Probability of working days in month
+  # Propability-price df
+  co <- 0.8 # Percentage of regular clients
+  na <- 1 - co # Percentage of new clients
+  k4 <- c(0.01, 0.01, 0.3, 0.45, 0.3) # Probability of daily demand
+  dp <- c(0.3, 0.2, 0.15, 0.1, 0.1, 0.1, 0.05) # Probability of working days in month
 
-pp <- data.frame(
-  method = c("1to1", "2D", "3D", "4D", "5to7D", "8to10D"), # Method names
-  co_prob = c(0.05, 0.2, 0.4, 0.25, 0.1, 0) * co, # Method probability by regulars
-  na_prob = c(0.05, 0.2, 0.4, 0.25, 0.1, 0) * na, # Method probability by new clients
-  co_price = c(100, 125, 140, 150, 160, 180), # Prices for regular clients
-  na_price = c(130, 140, 160, 180, 200, 220) # Prices for new clients
-)
-
-pre <- pp
-names(pre) <- c("method", "Regulars_prob", "New_clients_prob", "Regulars_prices", "New_clients_prices")
-
-data.frame(pre) %>%
-  kable() %>%
-  kable_styling()
-
-# User-made function
-
-##########################################################################
-#                               Disclaimer                               #
-##########################################################################
-# calc function has been recently vectorized.
-# You can still view it raw for-loop form at kaggle's code section.
-
-# rep: number of sampling iterations (default: 1000)
-# wc:  rent cost (values: 500:1500, no default)
-# dm:  working days in month (values: 20:26, default: sample)
-# cc:  client cost (values: 30:50, default: sample)
-# kk:  number of clients per day (values: 0:4, default: sample)
-
-calc <- function(rep = 1000, wc, dm, cc, kk) {
-
-  # Input validation
-  assertthat::assert_that(
-    wc %in% 500:1500,
-    (missing(dm) || dm %in% 20:26),
-    (missing(cc) || cc %in% 30:50),
-    (missing(kk) || kk %in% 0:4)
+  pp <- data.frame(
+    method = c("1to1", "2D", "3D", "4D", "5to7D", "8to10D"), # Method names
+    co_prob = c(0.05, 0.2, 0.4, 0.25, 0.1, 0) * co, # Method probability by regulars
+    na_prob = c(0.05, 0.2, 0.4, 0.25, 0.1, 0) * na, # Method probability by new clients
+    co_price = c(100, 125, 140, 150, 160, 180), # Prices for regular clients
+    na_price = c(130, 140, 160, 180, 200, 220) # Prices for new clients
   )
 
-  # Sample data
-  # Working days in a month
-  m_Day <- if (missing(dm)) {
-    message("Sampling number of working days per month")
-    sample(d, rep, prob = dp, replace = TRUE)
-  } else {
-    rep(dm, rep)
-  }
+  pre <- pp
+  names(pre) <- c("method", "Regulars_prob", "New_clients_prob", "Regulars_prices", "New_clients_prices")
 
-  # Clients in a month
-  m_Cl <- if (missing(kk)) {
-    message("Sampling number of clients per month")
-    sapply(seq(m_Day), function(x) {
-      sum(sample(k, size = m_Day[x], replace = TRUE, prob = k4))
+  data.frame(pre) %>%
+    kable() %>%
+    kable_styling()
+
+  # User-made function
+
+      ##########################################################################
+      #                               Disclaimer                               #
+      ##########################################################################
+          # calc function has been recently vectorized.
+          # You can still view it raw for-loop form at kaggle's code section.
+
+    # rep: number of sampling iterations (default: 1000)
+    # wc:  rent cost (values: 500:1500, no default)
+    # dm:  working days in month (values: 20:26, default: sample)
+    # cc:  client cost (values: 30:50, default: sample)
+    # kk:  number of clients per day (values: 0:4, default: sample)
+
+  calc <- function(rep = 1000, wc, dm, cc, kk) {
+
+    # Input validation
+    assertthat::assert_that(
+      wc %in% 500:1500,
+      (missing(dm) || dm %in% 20:26),
+      (missing(cc) || cc %in% 30:50),
+      (missing(kk) || kk %in% 0:4)
+    )
+
+    # Sample data
+    # Working days in a month
+    m_Day <- if (missing(dm)) {
+      message("Sampling number of working days per month")
+      sample(d, rep, prob = dp, replace = TRUE)
+    } else {
+      rep(dm, rep)
+    }
+
+    # Clients in a month
+    m_Cl <- if (missing(kk)) {
+      message("Sampling number of clients per month")
+      sapply(seq(m_Day), function(x) {
+        sum(sample(k, size = m_Day[x], replace = TRUE, prob = k4))
+      })
+    } else {
+      kk * m_Day
+    }
+
+    # Clients costs in a month
+    co_Cl <- if (missing(cc)) {
+      message("Sampling client cost")
+      m_Cl * sample(c, 1)
+    } else {
+      m_Cl * cc
+    }
+
+    # Main Body
+    # Costs
+    cos <- wc + co_Cl
+
+    # Income
+    inc <- sapply(seq(m_Cl), function(x) {
+      sum(sample(
+        c(pp$co_price, pp$na_price),
+        size = m_Cl[x],
+        replace = TRUE,
+        prob = c(pp$co_prob, pp$na_prob)
+      ))
     })
-  } else {
-    kk * m_Day
-  }
 
-  # Clients costs in a month
-  co_Cl <- if (missing(cc)) {
-    message("Sampling client cost")
-    m_Cl * sample(c, 1)
-  } else {
-    m_Cl * cc
-  }
+    # True income
+    inc <- (inc - cos) * 0.81
 
-  # Main Body
-  # Costs
-  cos <- wc + co_Cl
-
-  # Income
-  inc <- sapply(seq(m_Cl), function(x) {
-    sum(sample(
-      c(pp$co_price, pp$na_price),
-      size = m_Cl[x],
-      replace = TRUE,
-      prob = c(pp$co_prob, pp$na_prob)
-    ))
-  })
-
-  # True income
-  inc <- (inc - cos) * 0.81
-
-  # Return
-  data.frame(
-    "Rent" = wc,
-    "Work_day" = m_Day,
-    "Cl_Mon" = m_Cl,
-    "Cl_Cost_Mon" = cos,
-    "Income" = inc,
-    "incCat" = ifelse(inc < 3000,
-      "<3000",
-      ifelse(inc > 5000,
-        ">5000",
-        "3000<x<5000"
+    # Return
+    data.frame(
+      "Rent" = wc,
+      "Work_day" = m_Day,
+      "Cl_Mon" = m_Cl,
+      "Cl_Cost_Mon" = cos,
+      "Income" = inc,
+      "incCat" = ifelse(inc < 3000,
+        "<3000",
+        ifelse(inc > 5000,
+          ">5000",
+          "3000<x<5000"
+        )
       )
     )
-  )
-}
+  }
 
 
 # Computation
-# Scenarios
-sce <- data.frame(
-  Name = c("Min1", "Min2", "Min3", "Sim1", "Sim2", "Sim3", "Max1", "Max2", "Max3"),
-  Rent = rep(c(500, 1000, 1500), 3),
-  Working_day = c(rep(20, 3), rep("random", 3), rep(26, 3)),
-  Client_cost = c(rep(50, 3), rep("random", 3), rep(40, 3)),
-  Clients_per_day = c(rep(2, 3), rep("random", 3), rep(4, 3))
-)
-
-# Calculations
-op <- rbind(
-  # Minimal scenario
-  # Rent: 500,1000,1500 - Working day: 20 - Client cost: 50 - Clients Per Day: 2
-  calc(wc = 500, dm = min(d), cc = max(c), kk = 2),
-  calc(wc = 1000, dm = min(d), cc = max(c), kk = 2),
-  calc(wc = 1500, dm = min(d), cc = max(c), kk = 2),
-  # Maximal scenario
-  # Rent: 500,1000,1500 - Working day: 26 - Client cost: 40 - Clients Per Day, max: 4
-  calc(wc = 500, dm = max(d), cc = min(c), kk = 4),
-  calc(wc = 1000, dm = max(d), cc = min(c), kk = 4),
-  calc(wc = 1500, dm = max(d), cc = min(c), kk = 4),
-  # Stochastic symulation
-  calc(wc = 500),
-  calc(wc = 1000),
-  calc(wc = 1500)
-)
-
-op$type <- factor(c(rep("Min", 3000), rep("Max", 3000), rep("Sim", 3000)),
-  levels = c("Min", "Sim", "Max")
-)
-
-me <- op %>%
-  group_by(type, Rent) %>%
-  summarise(
-    Mean_Monthly_Client_Cost = round(mean(Cl_Cost_Mon), 2),
-    Mean_Monthly_Income = round(mean(Income), 2)
+  # Scenarios
+  sce <- data.frame(
+    Name = c("Min1", "Min2", "Min3", "Sim1", "Sim2", "Sim3", "Max1", "Max2", "Max3"),
+    Rent = rep(c(500, 1000, 1500), 3),
+    Working_day = c(rep(20, 3), rep("random", 3), rep(26, 3)),
+    Client_cost = c(rep(50, 3), rep("random", 3), rep(40, 3)),
+    Clients_per_day = c(rep(2, 3), rep("random", 3), rep(4, 3))
   )
 
-data.frame(sce, me[, 3:4]) %>%
-  kable() %>%
-  kable_styling()
+  # Calculations
+  op <- rbind(
+    # Minimal scenario
+    # Rent: 500,1000,1500 - Working day: 20 - Client cost: 50 - Clients Per Day: 2
+    calc(wc = 500, dm = min(d), cc = max(c), kk = 2),
+    calc(wc = 1000, dm = min(d), cc = max(c), kk = 2),
+    calc(wc = 1500, dm = min(d), cc = max(c), kk = 2),
+    # Maximal scenario
+    # Rent: 500,1000,1500 - Working day: 26 - Client cost: 40 - Clients Per Day, max: 4
+    calc(wc = 500, dm = max(d), cc = min(c), kk = 4),
+    calc(wc = 1000, dm = max(d), cc = min(c), kk = 4),
+    calc(wc = 1500, dm = max(d), cc = min(c), kk = 4),
+    # Stochastic symulation
+    calc(wc = 500),
+    calc(wc = 1000),
+    calc(wc = 1500)
+  )
+
+  op$type <- factor(c(rep("Min", 3000), rep("Max", 3000), rep("Sim", 3000)),
+    levels = c("Min", "Sim", "Max")
+  )
+
+  me <- op %>%
+    group_by(type, Rent) %>%
+    summarise(
+      Mean_Monthly_Client_Cost = round(mean(Cl_Cost_Mon), 2),
+      Mean_Monthly_Income = round(mean(Income), 2)
+    )
+
+  data.frame(sce, me[, 3:4]) %>%
+    kable() %>%
+    kable_styling()
 
 
 # Visualization

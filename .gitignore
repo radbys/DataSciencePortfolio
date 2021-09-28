@@ -4,3 +4,4 @@ DataSciencePortfolio.Rproj
 .Rdata
 .httr-oauth
 .DS_Store
+.gitignore
