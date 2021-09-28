@@ -20,7 +20,7 @@
 #   * https://www.kaggle.com/radbys/activities-in-rugby-exploratory-data-analysis
 ################################################################################
 
-# Environment settings
+# Environment setup
   # Loading libraries
   library(tidyverse)
   library(stringi)
