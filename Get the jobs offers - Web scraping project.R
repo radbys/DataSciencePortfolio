@@ -42,16 +42,13 @@ scr_max <- function(){
   scroll(bd)
 
   # Get last offer position
-  lst <- offers()[offers() %>% length()] %>%
-    html_elements(xpath = "@style") %>%
-    html_text() %>%
-    gsub(x = ., '.*top: |px; heigh.*' ,"") %>%
-    as.numeric()
+  Sys.sleep(1)
+  lst <- lst_id()
 
   # Scroll to top
   scroll(0)
 
-  lst <- lst_id()
+  return(lst)
 }
 
 get_text <- function(x, txt = offers()){
@@ -127,6 +124,53 @@ get_offers <- function(){
 
 }
 
+get_details <- function() {
+  iters <- 1:nrow(dt)
+
+  lapply(iters[1:30], function(i){
+
+    print(sprintf("Scraping offer number: %s", i))
+
+    ff$navigate(dt$link[i])
+    Sys.sleep(abs(rnorm(1, 2, 1.5)))
+
+    source <- ff$getPageSource()[[1]] %>%
+      read_html()
+
+    topbar <- source %>%
+      html_elements(xpath = "//div[@class = 'css-1kgdb8a']/div/div/text()") %>%
+      html_text()
+
+    techs <- source %>%
+      html_elements(xpath = "//div[@class = 'css-1ikoimk']/div/div/@title") %>%
+      html_text()
+
+    text <- source %>%
+      html_elements(xpath = "//div[@class = 'css-alatv1']/span") %>%
+      html_elements(xpath = ".//div/text() |
+                           .//strong/text() |
+                           .//li/text()") %>%
+      html_text()
+
+
+
+    data.frame(
+      size = as.numeric(gsub("[+><, ]|.*-", "", topbar[2], perl = TRUE)),
+      exp_lvl = topbar[4],
+      exp_yrs = text[grepl("(year.*experience|experience*year|lat.*doś|doś.*lat|let.*doś|doś.*let)",
+                           text,
+                           ignore.case = TRUE,
+                           perl = TRUE)] %>%
+        paste(collapse = ". "),
+      r_men = text[grepl("(?<![^.,/;: ])R$|(?<![^.,/;: ])R(?![^.,/;: ])", text, perl = TRUE)] %>%
+        paste(collapse = " "),
+      add_tech = paste(techs[-c(1:3)], collapse = ", ")
+    )
+  }) %>%
+    do.call(rbind, .) %>%
+    as.data.frame()
+}
+
 # Wczytanie strony --------------------------------------------------------
 rd <- rsDriver(
   browser = "firefox",
@@ -153,6 +197,13 @@ ff$navigate("https://justjoin.it/all/data")
 
 # Sciagnij oferty
 dt <- get_offers()
+det <- get_details()
+
+
+offs <- cbind(
+  dt,
+  det
+)
 
 
 
