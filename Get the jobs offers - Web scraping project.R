@@ -21,22 +21,15 @@ offers <- function(){
     html_elements(xpath = "//div[@class = 'css-ic7v2w']/div/div[not(@class)]")
 }
 
-scr_int <- function(){
-  sc <- offers() %>%
-    length() * 2 * 89
-
-  scroll(sc)
-
-  rtn <- offers() %>%
-    length() * 89
-
-  scroll(0)
-
-  return(rtn)
+lst_id <- function(){
+  offers()[offers() %>% length()] %>%
+    html_elements(xpath = "@style") %>%
+    html_text() %>%
+    gsub(x = ., '.*top: |px; heigh.*' ,"") %>%
+    as.numeric()
 }
 
 scr_max <- function(){
-
   # Find borders
   bd <- ff$getPageSource()[[1]] %>%
     read_html() %>%
@@ -58,7 +51,7 @@ scr_max <- function(){
   # Scroll to top
   scroll(0)
 
-  lst
+  lst <- lst_id()
 }
 
 get_text <- function(x, txt = offers()){
@@ -68,20 +61,39 @@ get_text <- function(x, txt = offers()){
 }
 
 get_offers <- function(){
-  max <- tryCatch(scr_max(), error = function(cond) scr_max())
-  Sys.sleep(1)
 
-  iters <- seq(scr_int(), max, by = scr_int())
-  Sys.sleep(1)
+  lst_off <- scr_max()
+  Sys.sleep(2)
+  loc_max <- 0
 
-  lapply(iters, function(x){
-    # Pensja
+  df <- data.frame(
+    id = NULL,
+    title = NULL,
+    company = NULL,
+    city = NULL,
+    remote = NULL,
+    salary_from = NULL,
+    salary_to = NULL,
+    tech1 = NULL,
+    tech2 = NULL,
+    tech3 = NULL,
+    link = NULL
+  )
+
+  while(loc_max != lst_off){
+
+    # Df
     h <- get_text('a/div/div[2]/div[1]/div[2]/*')
     h <- gsub(x = h, " ", "")
     f <- suppressWarnings(as.numeric(gsub(x = h, '-.*' ,"")))
     t <- suppressWarnings(as.numeric(gsub(x = h, '.*-|PLN.*' ,"")))
 
-    df <- data.frame(
+    tmp <- data.frame(
+      id = offers() %>%
+        html_elements(xpath = "@style") %>%
+        html_text() %>%
+        gsub(x = ., '.*top: |px; heigh.*' ,"") %>%
+        as.numeric(),
       title = get_text("a/div/div[2]/div[1]/div[1]/div"),
       company = get_text("a/div/div[2]/div[2]/div[2]/div[1]/text()"),
       city = get_text("a/div/div[2]/div[2]/div[2]/div[2]/span[1]/text()"),
@@ -98,13 +110,21 @@ get_offers <- function(){
       link = sprintf("https://justjoin.it%s", get_text("a/@href"))
     )
 
-    scroll(x)
+
+    df <- rbind(
+      df, tmp
+    )
+
+    loc_max <- lst_id()
+    int <- loc_max + (89 * 3)
+    scroll(int)
     Sys.sleep(0.5)
 
-    return(df)
-  }) %>%
-    do.call(rbind, .) %>%
-    as.data.frame()
+  }
+
+  df <- df %>%
+    dplyr::filter(!duplicated(id))
+
 }
 
 # Wczytanie strony --------------------------------------------------------
