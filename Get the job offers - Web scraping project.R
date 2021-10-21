@@ -32,7 +32,7 @@ library(rvest)
 
   # Java script element scroll
   scroll <- function(x) {
-    RSelenium::ff$executeScript(
+    ff$executeScript(
       sprintf(
         "var es = document.getElementsByClassName('css-ic7v2w');
         var e = es[0];
@@ -44,7 +44,7 @@ library(rvest)
 
   # Html of visible offers
   offers <- function() {
-    RSelenium::ff$getPageSource()[[1]] %>%
+    ff$getPageSource()[[1]] %>%
       rvest::read_html() %>%
       rvest::html_elements(xpath = "//div[@class = 'css-ic7v2w']/div/div[not(@class)]")
   }
@@ -61,7 +61,7 @@ library(rvest)
   # Last offer id
   scr_max <- function() {
     # Find borders
-    bd <- RSelenium::ff$getPageSource()[[1]] %>%
+    bd <- ff$getPageSource()[[1]] %>%
       rvest::read_html() %>%
       rvest::html_elements(xpath = "//div[@class = 'css-ic7v2w']/div/@style") %>%
       rvest::html_text() %>%
@@ -165,10 +165,10 @@ library(rvest)
     lapply(iters, function(i) {
       print(sprintf("Scraping offer number: %s", i))
 
-      RSelenium::ff$navigate(dt$link[i])
+      ff$navigate(dt$link[i])
       Sys.sleep(abs(rnorm(1, 2, 1.5)))
 
-      source <- RSelenium::ff$getPageSource()[[1]] %>%
+      source <- ff$getPageSource()[[1]] %>%
         rvest::read_html()
 
       topbar <- source %>%
@@ -224,8 +224,8 @@ ff <- RSelenium::rd$client
 
 
 # Navigating to job offers website
-RSelenium::ff$maxWindowSize()
-RSelenium::ff$navigate("https://justjoin.it/all/data")
+ff$maxWindowSize()
+ff$navigate("https://justjoin.it/all/data")
 
 # Scraping
 dt <- get_offers()
